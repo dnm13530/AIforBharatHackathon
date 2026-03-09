@@ -64,7 +64,7 @@ AI Tutor Response
 
 #### AI Layer
 - Amazon Bedrock
-- Nova Lite LLM
+- Amazon Nova Pro LLM
 - Structured tutoring prompts
 
 ---
@@ -157,26 +157,7 @@ This encourages **conceptual understanding and independent reasoning**, which is
 
 ---
 
-## Technologies Used
 
-### Frontend
-- Android
-- Java
-- Room Database
-- RecyclerView
-
-### Backend
-- AWS Lambda
-- API Gateway
-
-### AI
-- Amazon Bedrock
-- Nova Lite LLM
-
-### Infrastructure
-- AWS Cloud
-
----
 
 ## Database
 

@@ -3,6 +3,7 @@ package com.manasa.olympiadedgeai.ui;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,7 +46,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (holder instanceof StudentMessageViewHolder) {
             ((StudentMessageViewHolder) holder).textViewMessage.setText(message.getText());
         } else {
-            ((TutorMessageViewHolder) holder).textViewMessage.setText(message.getText());
+            ((TutorMessageViewHolder) holder).bind(message.getText());
         }
     }
 
@@ -64,11 +65,29 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     static class TutorMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewMessage;
+        WebView webViewMessage;
 
         public TutorMessageViewHolder(@NonNull View itemView) {
             super(itemView);
-            textViewMessage = itemView.findViewById(R.id.textViewMessage);
+            webViewMessage = itemView.findViewById(R.id.webViewMessage);
+            webViewMessage.getSettings().setJavaScriptEnabled(true);
+            webViewMessage.setBackgroundColor(0); // Transparent to show bubble
+        }
+
+        public void bind(String text) {
+            if (text == null) return;
+            
+            // Fixed color to #333333 because the bubble background is white
+            String html = "<html><head>" +
+                    "<script type=\"text/javascript\" async src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML\"></script>" +
+                    "<style>" +
+                    "body { font-family: sans-serif; font-size: 15px; color: #333333; line-height: 1.5; margin: 0; padding: 8px; }" +
+                    "</style>" +
+                    "</head><body>" +
+                    text.replace("\n", "<br/>") +
+                    "</body></html>";
+
+            webViewMessage.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
         }
     }
 }

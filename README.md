@@ -1,5 +1,7 @@
 
 ##### The project files are uploaded to master branch
+#### Update : I have improved the MVP with Beautiful Math Rendering (LaTeX) and added Questions from the PYQs in the Database. Below is the link:
+https://olympiadedgeaisigned.s3.ap-south-1.amazonaws.com/app-release1.apk
 
 # OlympiadEdgeAI - A Socratic AI Math Tutor
 

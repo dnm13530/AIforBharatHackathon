@@ -31,7 +31,16 @@
 
         <activity
             android:name=".ui.LoginActivity"
-            android:label="Login" />
+            android:exported="true"
+            android:label="Login"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="olympiadedgeai" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".ui.SignUpActivity"

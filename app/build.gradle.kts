@@ -44,6 +44,8 @@ android {
         }
     }
     compileOptions {
+        // Enable core library desugaring to support Java 8+ features used by Amplify
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -53,6 +55,9 @@ android {
 }
 
 dependencies {
+    // Core library desugaring dependency
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -63,7 +68,10 @@ dependencies {
     
     // AWS SDK Core & Cognito
     implementation(libs.aws.core)
-    implementation(libs.aws.cognito) // Added this line
+    implementation(libs.aws.cognito)
+    
+    // Amplify for Social Login
+    implementation(libs.amplify.core)
     
     // Networking
     implementation(libs.retrofit)

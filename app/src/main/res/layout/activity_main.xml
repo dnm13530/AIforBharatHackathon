@@ -18,6 +18,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageButton
+        android:id="@+id/buttonProfile"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_myplaces"
+        android:contentDescription="User Profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#2196F3" />
+
     <TextView
         android:id="@+id/statusIndicator"
         android:layout_width="wrap_content"
@@ -25,9 +36,8 @@
         android:text="● Practice Mode (Offline)"
         android:textColor="#757575"
         android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/title"
-        app:layout_constraintBottom_toBottomOf="@id/title"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title" />
 
     <TextView
         android:id="@+id/subtitle"
@@ -36,7 +46,7 @@
         android:text="Socratic Math Tutor"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+        app:layout_constraintTop_toBottomOf="@id/statusIndicator" />
 
     <Button
         android:id="@+id/buttonViewProgress"
@@ -47,7 +57,7 @@
         android:textAllCaps="false"
         android:textColor="#2196F3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/statusIndicator" />
+        app:layout_constraintTop_toBottomOf="@id/buttonProfile" />
 
     <HorizontalScrollView
         android:id="@+id/filterScrollView"

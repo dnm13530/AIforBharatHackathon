@@ -1,32 +1,51 @@
 package com.manasa.olympiadedgeai.ui;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.manasa.olympiadedgeai.R;
 import com.manasa.olympiadedgeai.ai.AiTutorManager;
+import com.manasa.olympiadedgeai.auth.CognitoAuthManager;
 import com.manasa.olympiadedgeai.data.Attempt;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class QuestionDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_QUESTION_ID = "com.manasa.olympiadedgeai.ui.EXTRA_QUESTION_ID";
     private static final String TAG = "QuestionDetail";
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private static final int REQUEST_IMAGE_CAPTURE = 101;
 
     private QuestionViewModel mQuestionViewModel;
     private WebView mWebViewQuestion;
@@ -35,12 +54,16 @@ public class QuestionDetailActivity extends AppCompatActivity {
     private RecyclerView mRecyclerViewChat;
     private MessageAdapter mMessageAdapter;
     private AiTutorManager mAiTutorManager;
+    private CognitoAuthManager mAuthManager;
     private List<Message> mHistory = new ArrayList<>();
 
     private String mCorrectAnswer;
-    private String mCurrentQuestionText = ""; // Ensure it's never null
+    private String mCurrentQuestionText = "";
     private int mQuestionId;
     private int mHintsUsed = 0;
+    private String mCurrentUserId;
+    
+    private String mCurrentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +71,8 @@ public class QuestionDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_question_detail);
 
         mAiTutorManager = new AiTutorManager();
+        mAuthManager = new CognitoAuthManager(this);
+        mCurrentUserId = mAuthManager.getCurrentUserId() != null ? mAuthManager.getCurrentUserId() : "guest";
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -66,6 +91,7 @@ public class QuestionDetailActivity extends AppCompatActivity {
         Button buttonAskHelp = findViewById(R.id.buttonAskHelp);
         Button buttonChatSubmit = findViewById(R.id.buttonChatSubmit);
         Button buttonNextHint = findViewById(R.id.buttonNextHint);
+        ImageButton buttonCamera = findViewById(R.id.buttonCamera);
 
         WebSettings settings = mWebViewQuestion.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -123,6 +149,63 @@ public class QuestionDetailActivity extends AppCompatActivity {
             checkAnswer(userAnswer);
             mEditTextAnswer.setText("");
         });
+
+        buttonCamera.setOnClickListener(v -> checkCameraPermission());
+    }
+
+    private void checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+        } else {
+            launchCamera();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                launchCamera();
+            } else {
+                Toast.makeText(this, "Camera permission is required to snap your work", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void launchCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                Log.e(TAG, "Error creating image file", ex);
+            }
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this, "com.manasa.olympiadedgeai.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            addStudentMessage("[Photo of my work sent]");
+            getVisionAiResponse();
+        }
     }
 
     private void addStudentMessage(String text) {
@@ -154,12 +237,9 @@ public class QuestionDetailActivity extends AppCompatActivity {
     }
 
     private void getAiResponse() {
-        if (mCurrentQuestionText.isEmpty()) {
-            Toast.makeText(this, "Question data not loaded yet", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (mCurrentQuestionText.isEmpty()) return;
 
-        mAiTutorManager.getSocraticHint(mQuestionId, mCurrentQuestionText, mHistory, new AiTutorManager.TutorCallback() {
+        mAiTutorManager.getSocraticHint(mCurrentUserId, mQuestionId, mCurrentQuestionText, mHistory, new AiTutorManager.TutorCallback() {
             @Override
             public void onResponse(String response) {
                 runOnUiThread(() -> addTutorMessage(response));
@@ -169,6 +249,25 @@ public class QuestionDetailActivity extends AppCompatActivity {
             public void onError(String error) {
                 runOnUiThread(() -> {
                     Log.e(TAG, "AI Error: " + error);
+                    Toast.makeText(QuestionDetailActivity.this, error, Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
+    private void getVisionAiResponse() {
+        if (mCurrentQuestionText.isEmpty() || mCurrentPhotoPath == null) return;
+
+        mAiTutorManager.getVisionHint(mCurrentUserId, mQuestionId, mCurrentQuestionText, mHistory, mCurrentPhotoPath, new AiTutorManager.TutorCallback() {
+            @Override
+            public void onResponse(String response) {
+                runOnUiThread(() -> addTutorMessage(response));
+            }
+
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> {
+                    Log.e(TAG, "Vision AI Error: " + error);
                     Toast.makeText(QuestionDetailActivity.this, error, Toast.LENGTH_SHORT).show();
                 });
             }

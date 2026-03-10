@@ -7,6 +7,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import com.manasa.olympiadedgeai.auth.CognitoAuthManager;
 import com.manasa.olympiadedgeai.data.QuestionWithStatus;
 import com.manasa.olympiadedgeai.ui.LoginActivity;
 import com.manasa.olympiadedgeai.ui.MasteryDashboardActivity;
+import com.manasa.olympiadedgeai.ui.ProfileActivity;
 import com.manasa.olympiadedgeai.ui.QuestionAdapter;
 import com.manasa.olympiadedgeai.ui.QuestionDetailActivity;
 import com.manasa.olympiadedgeai.ui.QuestionViewModel;
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         if (!mAuthManager.isUserLoggedIn()) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
-            finish(); // Prevent user from coming back to main without login
+            finish();
             return;
         }
 
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         ChipGroup chipGroup = findViewById(R.id.chipGroupFilters);
         Button buttonViewProgress = findViewById(R.id.buttonViewProgress);
+        ImageButton buttonProfile = findViewById(R.id.buttonProfile);
 
         mAdapter = new QuestionAdapter();
         recyclerView.setAdapter(mAdapter);
@@ -76,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
 
         buttonViewProgress.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MasteryDashboardActivity.class);
+            startActivity(intent);
+        });
+
+        buttonProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
 

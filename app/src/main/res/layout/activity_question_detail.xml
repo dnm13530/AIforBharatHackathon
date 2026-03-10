@@ -166,13 +166,22 @@
                 android:orientation="horizontal"
                 android:padding="4dp">
 
+                <ImageButton
+                    android:id="@+id/buttonCamera"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_camera"
+                    android:contentDescription="Take photo of handwritten work"
+                    app:tint="#888888" />
+
                 <EditText
                     android:id="@+id/editTextChatInput"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:hint="Type your next step here..."
+                    android:hint="Type or snap your step..."
                     android:padding="8dp"
                     android:textSize="14sp"
                     android:inputType="text" />

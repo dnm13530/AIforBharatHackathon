@@ -18,19 +18,24 @@ public class TutorApiModels {
     }
 
     public static class Request {
+        @SerializedName("userId") public String userId;
         @SerializedName("questionId") public String questionId;
         @SerializedName("questionText") public String questionText;
         @SerializedName("messages") public List<HistoryItem> history;
+        @SerializedName("imageBase64") public String imageBase64;
 
-        public Request(String questionId, String questionText, List<Message> originalHistory) {
+        public Request(String userId, String questionId, String questionText, List<Message> originalHistory, String imageBase64) {
+            this.userId = userId;
             this.questionId = questionId;
             this.questionText = questionText;
             this.history = new ArrayList<>();
+            this.imageBase64 = imageBase64;
             
-            for (Message m : originalHistory) {
-                // IMPORTANT: Only add to history if it's NOT a JSON string
-                if (m.getText() != null && !m.getText().startsWith("{") && !m.getText().isEmpty()) {
-                    this.history.add(new HistoryItem(m.getText(), m.getType()));
+            if (originalHistory != null) {
+                for (Message m : originalHistory) {
+                    if (m.getText() != null && !m.getText().startsWith("{") && !m.getText().isEmpty()) {
+                        this.history.add(new HistoryItem(m.getText(), m.getType()));
+                    }
                 }
             }
         }
@@ -46,7 +51,6 @@ public class TutorApiModels {
         public String getEffectiveResponse() {
             if (tutorResponse != null && !tutorResponse.isEmpty()) return tutorResponse;
             if (message != null && !message.isEmpty()) return message;
-            // Never return 'body' here, as it contains raw JSON
             return null;
         }
     }

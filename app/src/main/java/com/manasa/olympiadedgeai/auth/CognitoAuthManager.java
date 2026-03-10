@@ -99,6 +99,16 @@ public class CognitoAuthManager {
         }
     }
 
+    /**
+     * Returns the ID (username) of the currently logged-in user.
+     */
+    public String getCurrentUserId() {
+        if (userPool.getCurrentUser() != null) {
+            return userPool.getCurrentUser().getUserId();
+        }
+        return null;
+    }
+
     public void logout() {
         if (userPool.getCurrentUser() != null) {
             userPool.getCurrentUser().signOut();

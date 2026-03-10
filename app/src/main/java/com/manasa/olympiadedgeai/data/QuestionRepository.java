@@ -45,4 +45,8 @@ public class QuestionRepository {
     public LiveData<Integer> getCorrectCount(int questionId) {
         return mAttemptDao.getCorrectCount(questionId);
     }
+
+    public LiveData<List<TopicMastery>> getTopicMastery() {
+        return mAttemptDao.getTopicMastery();
+    }
 }

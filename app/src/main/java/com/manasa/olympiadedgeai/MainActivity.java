@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.ChipGroup;
+import com.manasa.olympiadedgeai.auth.CognitoAuthManager;
 import com.manasa.olympiadedgeai.data.QuestionWithStatus;
+import com.manasa.olympiadedgeai.ui.LoginActivity;
+import com.manasa.olympiadedgeai.ui.MasteryDashboardActivity;
 import com.manasa.olympiadedgeai.ui.QuestionAdapter;
 import com.manasa.olympiadedgeai.ui.QuestionDetailActivity;
 import com.manasa.olympiadedgeai.ui.QuestionViewModel;
@@ -28,15 +32,28 @@ public class MainActivity extends AppCompatActivity {
     private List<QuestionWithStatus> mFullList = new ArrayList<>();
     private QuestionAdapter mAdapter;
     private TextView mStatusIndicator;
+    private CognitoAuthManager mAuthManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        mAuthManager = new CognitoAuthManager(this);
+        
+        // 1. CHECK LOGIN STATUS
+        if (!mAuthManager.isUserLoggedIn()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish(); // Prevent user from coming back to main without login
+            return;
+        }
+
         setContentView(R.layout.activity_main);
 
         mStatusIndicator = findViewById(R.id.statusIndicator);
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         ChipGroup chipGroup = findViewById(R.id.chipGroupFilters);
+        Button buttonViewProgress = findViewById(R.id.buttonViewProgress);
 
         mAdapter = new QuestionAdapter();
         recyclerView.setAdapter(mAdapter);
@@ -55,6 +72,11 @@ public class MainActivity extends AppCompatActivity {
             if (!checkedIds.isEmpty()) {
                 applyFilter(checkedIds.get(0));
             }
+        });
+
+        buttonViewProgress.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MasteryDashboardActivity.class);
+            startActivity(intent);
         });
 
         updateNetworkStatus();

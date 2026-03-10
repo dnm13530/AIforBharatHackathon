@@ -9,6 +9,7 @@ import com.manasa.olympiadedgeai.data.Attempt;
 import com.manasa.olympiadedgeai.data.Question;
 import com.manasa.olympiadedgeai.data.QuestionRepository;
 import com.manasa.olympiadedgeai.data.QuestionWithStatus;
+import com.manasa.olympiadedgeai.data.TopicMastery;
 
 import java.util.List;
 
@@ -46,5 +47,9 @@ public class QuestionViewModel extends AndroidViewModel {
 
     public LiveData<Integer> getCorrectCount(int questionId) {
         return mRepository.getCorrectCount(questionId);
+    }
+
+    public LiveData<List<TopicMastery>> getTopicMastery() {
+        return mRepository.getTopicMastery();
     }
 }

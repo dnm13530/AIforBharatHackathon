@@ -17,4 +17,11 @@ public interface AttemptDao {
 
     @Query("SELECT COUNT(*) FROM attempts WHERE questionId = :questionId AND isCorrect = 1")
     LiveData<Integer> getCorrectCount(int questionId);
+
+    @Query("SELECT q.topic as topic, COUNT(q.id) as totalQuestions, " +
+           "SUM(CASE WHEN a.isCorrect = 1 THEN 1 ELSE 0 END) as solvedCorrectly, " +
+           "AVG(CAST(a.hintsUsed AS FLOAT)) as averageHints " +
+           "FROM questions q LEFT JOIN attempts a ON q.id = a.questionId " +
+           "GROUP BY q.topic")
+    LiveData<List<TopicMastery>> getTopicMastery();
 }

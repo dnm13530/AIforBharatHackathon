@@ -15,18 +15,37 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OlympiadEdgeAI"
         android:networkSecurityConfig="@xml/network_security_config">
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.LoginActivity"
+            android:label="Login" />
+
+        <activity
+            android:name=".ui.SignUpActivity"
+            android:label="Sign Up" />
+
+        <activity
+            android:name=".ui.VerifyActivity"
+            android:label="Verify Email" />
+
         <activity
             android:name=".ui.QuestionDetailActivity"
             android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".ui.MasteryDashboardActivity"
+            android:label="Mastery Dashboard"
+            android:parentActivityName=".MainActivity" />
+
     </application>
 
 </manifest>

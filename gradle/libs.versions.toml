@@ -28,6 +28,7 @@ retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 aws-core = { group = "com.amazonaws", name = "aws-android-sdk-core", version.ref = "aws" }
+aws-cognito = { group = "com.amazonaws", name = "aws-android-sdk-cognitoidentityprovider", version.ref = "aws" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 
 [plugins]

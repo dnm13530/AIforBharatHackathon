@@ -61,8 +61,9 @@ dependencies {
     annotationProcessor(libs.room.compiler)
     implementation(libs.room.ktx)
     
-    // AWS SDK Core
+    // AWS SDK Core & Cognito
     implementation(libs.aws.core)
+    implementation(libs.aws.cognito) // Added this line
     
     // Networking
     implementation(libs.retrofit)

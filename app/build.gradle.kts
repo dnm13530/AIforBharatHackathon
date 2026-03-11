@@ -19,8 +19,8 @@ android {
         applicationId = "com.manasa.olympiadedgeai"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2 // Incremented for OCR/Vision update
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
@@ -44,8 +44,6 @@ android {
         }
     }
     compileOptions {
-        // Enable core library desugaring to support Java 8+ features used by Amplify
-        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -55,9 +53,6 @@ android {
 }
 
 dependencies {
-    // Core library desugaring dependency
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -66,12 +61,9 @@ dependencies {
     annotationProcessor(libs.room.compiler)
     implementation(libs.room.ktx)
     
-    // AWS SDK Core & Cognito
+    // AWS SDK Core & Cognito (Native SDK)
     implementation(libs.aws.core)
     implementation(libs.aws.cognito)
-    
-    // Amplify for Social Login
-    implementation(libs.amplify.core)
     
     // Networking
     implementation(libs.retrofit)
